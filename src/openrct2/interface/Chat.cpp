@@ -16,8 +16,8 @@
 #include "../localisation/Localisation.h"
 #include "../network/network.h"
 #include "../platform/platform.h"
+#include "../ui/UiContext.h"
 #include "../util/Util.h"
-
 #include <algorithm>
 
 bool gChatOpen = false;
@@ -224,6 +224,10 @@ void chat_history_add(const char* src)
     std::memcpy(_chatHistory[index], buffer, std::min<size_t>(strlen(buffer), CHAT_INPUT_SIZE - 1));
     _chatHistoryTime[index] = platform_get_ticks();
     _chatHistoryIndex++;
+
+    std::string logmsg(buffer);
+    auto uiContext = OpenRCT2::GetContext()->GetUiContext();
+    uiContext->WriteLineToConsole(logmsg);
 
     // Log to file (src only as logging does its own timestamp)
     network_append_chat_log(src);

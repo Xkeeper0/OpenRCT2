@@ -90,6 +90,7 @@ namespace OpenRCT2
         {
             virtual ~IUiContext() = default;
 
+            virtual void WriteLineToConsole(const std::string& input) abstract;
             virtual void Update() abstract;
             virtual void Draw(rct_drawpixelinfo * dpi) abstract;
 

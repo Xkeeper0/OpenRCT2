@@ -115,6 +115,11 @@ public:
         delete _platformUiContext;
     }
 
+    void WriteLineToConsole(const std::string& input) override
+    {
+        _inGameConsole.WriteLine(input, FORMAT_WINDOW_COLOUR_2);
+    }
+
     void Update() override
     {
         _inGameConsole.Update();

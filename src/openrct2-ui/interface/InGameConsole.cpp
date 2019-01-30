@@ -28,15 +28,9 @@ static InGameConsole _inGameConsole;
 
 InGameConsole::InGameConsole()
 {
-    InteractiveConsole::WriteLine(OPENRCT2_NAME " " OPENRCT2_VERSION);
+    InteractiveConsole::WriteLine(std::string(gVersionInfoFull));
     InteractiveConsole::WriteLine("Type 'help' for a list of available commands. Type 'hide' to hide the console.");
     InteractiveConsole::WriteLine("");
-    WritePrompt();
-}
-
-void InGameConsole::WritePrompt()
-{
-    InteractiveConsole::WriteLine("> ");
 }
 
 void InGameConsole::Input(CONSOLE_INPUT input)
@@ -52,11 +46,10 @@ void InGameConsole::Input(CONSOLE_INPUT input)
             {
                 HistoryAdd(_consoleCurrentLine);
 
-                // Append text we are executing to prompt line
-                _consoleLines.back().append(_consoleCurrentLine);
+                // Append text we are executing to a prompt indicator and add it to the console
+                InteractiveConsole::WriteLine(std::string("> ") + _consoleCurrentLine);
 
                 Execute(_consoleCurrentLine);
-                WritePrompt();
                 ClearInput();
                 RefreshCaret();
             }
