@@ -6342,7 +6342,7 @@ static void window_ride_income_mouseup(rct_window* w, rct_widgetindex widgetInde
  */
 static void window_ride_income_resize(rct_window* w)
 {
-    window_set_resize(w, 316, 194, 316, 194);
+    window_set_resize(w, 316, 210, 316, 210);
 }
 
 /**
@@ -6576,6 +6576,12 @@ static void window_ride_income_paint(rct_window* w, rct_drawpixelinfo* dpi)
         gfx_draw_string_left(dpi, stringId, &profit, COLOUR_BLACK, x, y);
     }
     y += 18;
+
+    if (ride->value)
+    {
+        gfx_draw_string_left(dpi, STR_FINANCES_SUMMARY_EXPENDITURE_VALUE, &ride->value, COLOUR_BLACK, x, y);
+        y += LIST_ROW_HEIGHT;
+    }
 
     // Income per hour
     if (ride->income_per_hour != MONEY32_UNDEFINED)
