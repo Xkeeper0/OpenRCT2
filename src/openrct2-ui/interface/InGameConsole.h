@@ -62,7 +62,6 @@ namespace OpenRCT2::Ui
         void ClearInput();
         void ClearLine();
         void HistoryAdd(const utf8* src);
-        void WritePrompt();
         void ScrollToEnd();
         void Invalidate() const;
         int32_t GetNumVisibleLines() const;
