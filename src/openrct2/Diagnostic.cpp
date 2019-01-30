@@ -10,6 +10,7 @@
 #include "Diagnostic.h"
 
 #include "core/String.hpp"
+#include "ui/UiContext.h"
 
 #include <cstdarg>
 #include <cstdio>
@@ -87,6 +88,9 @@ void diagnostic_log(DIAGNOSTIC_LEVEL diagnosticLevel, const char* format, ...)
 
         auto stream = diagnostic_get_stream(diagnosticLevel);
         fprintf(stream, "%s%s\n", prefix.c_str(), msg.c_str());
+
+        auto uiContext = OpenRCT2::GetContext()->GetUiContext();
+        uiContext->WriteLineToConsole(prefix + msg);
     }
 }
 
@@ -114,6 +118,9 @@ void diagnostic_log_with_location(
 
         auto stream = diagnostic_get_stream(diagnosticLevel);
         fprintf(stream, "%s%s\n", prefix.c_str(), msg.c_str());
+
+        auto uiContext = OpenRCT2::GetContext()->GetUiContext();
+        uiContext->WriteLineToConsole(prefix + msg);
     }
 }
 
