@@ -3728,6 +3728,12 @@ STR_6277    :{WINDOW_COLOUR_2}Station index: {BLACK}{COMMA16}
 STR_6278    :Autosave amount
 STR_6279    :{SMALLFONT}{BLACK}Number of autosaves that should be kept
 
+#####################
+# ex-plus additions #
+#####################
+STR_9000    :"{STRINGID}{OUTLINE}{TOPAZ}"{NEWLINE}{STRINGID}
+STR_9001    :{RED}No entry
+
 #############
 # Scenarios #
 ################
