@@ -3901,9 +3901,7 @@ enum
     STR_AUTOSAVE_AMOUNT = 6278,
     STR_AUTOSAVE_AMOUNT_TIP = 6279,
 
-    // ex-plus additions
-    STR_MAP_TOOLTIP_BANNER_STRINGID_STRINGID = 9000,
-    STR_NO_ENTRY_TOOLTIP = 9001,
+    STR_MAP_TOOLTIP_BANNER_STRINGID_STRINGID = 6280,
 
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768
