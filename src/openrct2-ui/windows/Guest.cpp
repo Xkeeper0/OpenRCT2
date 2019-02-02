@@ -1392,6 +1392,22 @@ static void window_guest_stats_bars_paint(
 
 /**
  *
+ *
+ */
+static void window_guest_stats_bars_numbers_paint(
+    int32_t value, int32_t min_value, int32_t max_value, int32_t x, int32_t y, rct_window* w, rct_drawpixelinfo* dpi,
+    int32_t colour)
+{
+    x += 63 + 37;
+    char buf[200] = {};
+    float value_text = (float)(value - min_value) / float(max_value - min_value) * 100.0f;
+    sprintf(buf, "%.1f%%", value_text);
+    int32_t width = gfx_get_string_width(buf);
+    gfx_draw_string(dpi, buf, colour | COLOUR_FLAG_OUTLINE, x - width, y);
+}
+
+/**
+ *
  *  rct2: 0x0069711D
  */
 void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
@@ -1417,6 +1433,7 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
     gfx_draw_string_left(dpi, STR_GUEST_STAT_HAPPINESS_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t happiness = peep->happiness;
+    int32_t happiness_target = peep->happiness_target;
     if (happiness < 10)
         happiness = 10;
     int32_t ebp = COLOUR_BRIGHT_GREEN;
@@ -1425,12 +1442,14 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
         ebp |= BAR_BLINK;
     }
     window_guest_stats_bars_paint(happiness, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(happiness_target, 0, PEEP_MAX_HAPPINESS, x, y, w, dpi, COLOUR_WHITE);
 
     // Energy
     y += LIST_ROW_HEIGHT;
     gfx_draw_string_left(dpi, STR_GUEST_STAT_ENERGY_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t energy = ((peep->energy - PEEP_MIN_ENERGY) * 255) / (PEEP_MAX_ENERGY - PEEP_MIN_ENERGY);
+    int32_t energy_target = peep->energy;
     ebp = COLOUR_BRIGHT_GREEN;
     if (energy < 50)
     {
@@ -1439,12 +1458,14 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
     if (energy < 10)
         energy = 10;
     window_guest_stats_bars_paint(energy, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(energy_target, PEEP_MIN_ENERGY, PEEP_MAX_ENERGY, x, y, w, dpi, COLOUR_WHITE);
 
     // Hunger
     y += LIST_ROW_HEIGHT;
     gfx_draw_string_left(dpi, STR_GUEST_STAT_HUNGER_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t hunger = peep->hunger;
+    int32_t hunger_real = 255 - peep->hunger;
     if (hunger > 190)
         hunger = 190;
 
@@ -1461,12 +1482,14 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
         ebp |= BAR_BLINK;
     }
     window_guest_stats_bars_paint(hunger, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(hunger_real, 0, 255, x, y, w, dpi, COLOUR_WHITE);
 
     // Thirst
     y += LIST_ROW_HEIGHT;
     gfx_draw_string_left(dpi, STR_GUEST_STAT_THIRST_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t thirst = peep->thirst;
+    int32_t thirst_real = 255 - peep->thirst;
     if (thirst > 190)
         thirst = 190;
 
@@ -1483,12 +1506,14 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
         ebp |= BAR_BLINK;
     }
     window_guest_stats_bars_paint(thirst, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(thirst_real, 0, 255, x, y, w, dpi, COLOUR_WHITE);
 
     // Nausea
     y += LIST_ROW_HEIGHT;
     gfx_draw_string_left(dpi, STR_GUEST_STAT_NAUSEA_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t nausea = peep->nausea - 32;
+    int32_t nausea_real = peep->nausea_target;
 
     if (nausea < 0)
         nausea = 0;
@@ -1501,12 +1526,14 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
         ebp |= BAR_BLINK;
     }
     window_guest_stats_bars_paint(nausea, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(nausea_real, 0, 255, x, y, w, dpi, COLOUR_WHITE);
 
     // Toilet
     y += LIST_ROW_HEIGHT;
     gfx_draw_string_left(dpi, STR_GUEST_STAT_TOILET_LABEL, gCommonFormatArgs, COLOUR_BLACK, x, y);
 
     int32_t toilet = peep->toilet - 32;
+    int32_t toilet_real = peep->toilet;
     if (toilet > 210)
         toilet = 210;
 
@@ -1522,6 +1549,7 @@ void window_guest_stats_paint(rct_window* w, rct_drawpixelinfo* dpi)
         ebp |= BAR_BLINK;
     }
     window_guest_stats_bars_paint(toilet, x, y, w, dpi, ebp);
+    window_guest_stats_bars_numbers_paint(toilet_real, 0, 255, x, y, w, dpi, COLOUR_WHITE);
 
     // Time in park
     y += LIST_ROW_HEIGHT + 1;
