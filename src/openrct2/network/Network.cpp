@@ -132,6 +132,7 @@ public:
     static const char* FormatChat(NetworkPlayer* fromplayer, const char* text);
     void SendPacketToClients(NetworkPacket& packet, bool front = false, bool gameCmd = false);
     bool CheckSRAND(uint32_t tick, uint32_t srand0);
+    bool IsDesynchronized();
     void CheckDesynchronizaton();
     void KickPlayer(int32_t playerId);
     void SetPassword(const char* password);
@@ -958,6 +959,11 @@ bool Network::CheckSRAND(uint32_t tick, uint32_t srand0)
     }
 
     return true;
+}
+
+bool Network::IsDesynchronized()
+{
+    return gNetwork._desynchronised;
 }
 
 void Network::CheckDesynchronizaton()
@@ -3111,6 +3117,11 @@ int32_t network_get_mode()
 int32_t network_get_status()
 {
     return gNetwork.GetStatus();
+}
+
+bool network_is_desynchronised()
+{
+    return gNetwork.IsDesynchronized();
 }
 
 void network_check_desynchronization()
