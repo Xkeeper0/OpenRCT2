@@ -3906,6 +3906,8 @@ enum
     STR_CHAT_BUTTON_ON_TOOLBAR = 6282,
     STR_CHAT_UNAVAILABLE = 6283,
 
+    STR_MULTIPLAYER_RECONNECT = 7000,
+
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768
 };

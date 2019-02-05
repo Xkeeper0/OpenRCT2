@@ -111,6 +111,7 @@ public:
 
     void SetEnvironment(const std::shared_ptr<OpenRCT2::IPlatformEnvironment>& env);
     bool Init();
+    void Reconnect();
     void Close();
     bool BeginClient(const char* host, uint16_t port);
     bool BeginServer(uint16_t port, const char* address);
@@ -281,6 +282,7 @@ private:
     int32_t status = NETWORK_STATUS_NONE;
     bool _closeLock = false;
     bool _requireClose = false;
+    bool _requireReconnect = false;
     bool wsa_initialized = false;
     std::unique_ptr<ITcpSocket> _listenSocket;
     std::unique_ptr<NetworkConnection> _serverConnection;
@@ -297,6 +299,8 @@ private:
     std::list<std::unique_ptr<NetworkConnection>> client_connection_list;
     std::multiset<GameCommand> game_command_queue;
     std::vector<uint8_t> chunk_buffer;
+    char _host[128] = {};
+    uint16_t _port = 0;
     std::string _password;
     bool _desynchronised = false;
     uint32_t server_connect_time = 0;
@@ -413,6 +417,20 @@ bool Network::Init()
     return true;
 }
 
+void Network::Reconnect()
+{
+    if (status != NETWORK_STATUS_NONE)
+    {
+        Close();
+    }
+    if (_requireClose)
+    {
+        _requireReconnect = true;
+        return;
+    }
+    BeginClient(_host, _port);
+}
+
 void Network::Close()
 {
     if (status != NETWORK_STATUS_NONE)
@@ -475,6 +493,8 @@ bool Network::BeginClient(const char* host, uint16_t port)
     mode = NETWORK_MODE_CLIENT;
 
     log_info("Connecting to %s:%u\n", host, port);
+    safe_strcpy(_host, host, sizeof(_host));
+    _port = port;
 
     _serverConnection = std::make_unique<NetworkConnection>();
     _serverConnection->Socket = CreateTcpSocket();
@@ -677,6 +697,10 @@ void Network::Update()
     if (_requireClose)
     {
         Close();
+        if (_requireReconnect)
+        {
+            Reconnect();
+        }
     }
 }
 
@@ -3044,6 +3068,11 @@ void network_set_env(const std::shared_ptr<IPlatformEnvironment>& env)
 void network_close()
 {
     gNetwork.Close();
+}
+
+void network_reconnect()
+{
+    gNetwork.Reconnect();
 }
 
 void network_shutdown_client()

@@ -3732,6 +3732,8 @@ STR_6281    :{SMALLFONT}{BLACK}Show a separate button for the Chat window in the
 STR_6282    :Chat
 STR_6283    :Chat not available at this time. Are you connected to a server?
 
+STR_7000    :Reconnect
+
 #############
 # Scenarios #
 ################
