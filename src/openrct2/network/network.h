@@ -22,6 +22,15 @@
 struct GameAction;
 struct rct_peep;
 struct LocationXYZ16;
+struct NetworkSyncInfo
+{
+    uint32_t tick;
+    uint32_t client_srand0;
+    uint32_t server_srand0;
+    uint32_t last_checksum_tick;
+    std::string client_sprite_hash;
+    std::string server_sprite_hash;
+};
 
 namespace OpenRCT2
 {
@@ -37,6 +46,7 @@ int32_t network_begin_server(int32_t port, const char* address);
 int32_t network_get_mode();
 int32_t network_get_status();
 bool network_is_desynchronised();
+NetworkSyncInfo network_get_sync_info();
 void network_check_desynchronization();
 void network_send_tick();
 void network_update();

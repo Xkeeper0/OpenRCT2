@@ -52,6 +52,8 @@ public:
                 return custom_currency_window_open();
             case WC_DEBUG_PAINT:
                 return window_debug_paint_open();
+            case WC_DEBUG_DESYNC:
+                return window_debug_desync_open();
             case WC_EDITOR_INVENTION_LIST:
                 return window_editor_inventions_list_open();
             case WC_EDITOR_OBJECT_SELECTION:

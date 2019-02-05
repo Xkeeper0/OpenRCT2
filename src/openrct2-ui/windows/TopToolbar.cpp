@@ -138,7 +138,8 @@ enum TOP_TOOLBAR_DEBUG_DDIDX {
 };
 
 enum TOP_TOOLBAR_NETWORK_DDIDX {
-    DDIDX_MULTIPLAYER = 0
+    DDIDX_MULTIPLAYER = 0,
+    DDIDX_DEBUG_DESYNC = 1
 };
 
 enum {
@@ -3241,10 +3242,14 @@ static void top_toolbar_init_debug_menu(rct_window* w, rct_widget* widget)
 
 static void top_toolbar_init_network_menu(rct_window* w, rct_widget* widget)
 {
-    gDropdownItemsFormat[0] = STR_MULTIPLAYER;
+    gDropdownItemsFormat[DDIDX_MULTIPLAYER] = STR_MULTIPLAYER;
+    gDropdownItemsFormat[DDIDX_DEBUG_DESYNC] = STR_DEBUG_TIP;
+    gDropdownItemsArgs[DDIDX_DEBUG_DESYNC] = STR_TOGGLE_OPTION;
 
     window_dropdown_show_text(
-        w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80, 0, 1);
+        w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80, 0, 2);
+
+    dropdown_set_checked(DDIDX_DEBUG_DESYNC, window_find_by_class(WC_DEBUG_DESYNC) != nullptr);
 
     gDropdownDefaultIndex = DDIDX_MULTIPLAYER;
 }
@@ -3298,6 +3303,16 @@ static void top_toolbar_network_menu_dropdown(int16_t dropdownIndex)
         {
             case DDIDX_MULTIPLAYER:
                 context_open_window(WC_MULTIPLAYER);
+                break;
+            case DDIDX_DEBUG_DESYNC:
+                if (window_find_by_class(WC_DEBUG_DESYNC) == nullptr)
+                {
+                    context_open_window(WC_DEBUG_DESYNC);
+                }
+                else
+                {
+                    window_close_by_class(WC_DEBUG_DESYNC);
+                }
                 break;
         }
     }

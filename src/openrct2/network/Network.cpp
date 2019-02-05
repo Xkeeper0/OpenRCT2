@@ -132,6 +132,7 @@ public:
     static const char* FormatChat(NetworkPlayer* fromplayer, const char* text);
     void SendPacketToClients(NetworkPacket& packet, bool front = false, bool gameCmd = false);
     bool CheckSRAND(uint32_t tick, uint32_t srand0);
+    NetworkSyncInfo GetNetworkSyncInfo();
     bool IsDesynchronized();
     void CheckDesynchronizaton();
     void KickPlayer(int32_t playerId);
@@ -300,6 +301,7 @@ private:
     std::vector<uint8_t> chunk_buffer;
     std::string _password;
     bool _desynchronised = false;
+    NetworkSyncInfo _network_sync_info{ 0, 0, 0, 0, {}, {} };
     uint32_t server_connect_time = 0;
     uint8_t default_group = 0;
     uint32_t game_commands_processed_this_tick = 0;
@@ -411,6 +413,7 @@ bool Network::Init()
     ServerProviderName = std::string();
     ServerProviderEmail = std::string();
     ServerProviderWebsite = std::string();
+
     return true;
 }
 
@@ -941,18 +944,48 @@ bool Network::CheckSRAND(uint32_t tick, uint32_t srand0)
     if (tick == server_srand0_tick)
     {
         server_srand0_tick = 0;
+        bool sprites_mismatch = false;
+        bool checksum_tick = false;
         // Check that the server and client sprite hashes match
-        rct_sprite_checksum checksum = sprite_checksum();
-        std::string client_sprite_hash = checksum.ToString();
-        const bool sprites_mismatch = server_sprite_hash[0] != '\0' && client_sprite_hash != server_sprite_hash;
-        // Check PRNG values and sprite hashes, if exist
-        if ((srand0 != server_srand0) || sprites_mismatch)
+        if (server_sprite_hash[0] != '\0')
         {
-#    ifdef DEBUG_DESYNC
-            dbg_report_desync(tick, srand0, server_srand0, client_sprite_hash.c_str(), server_sprite_hash.c_str());
-#    endif
+            rct_sprite_checksum checksum = sprite_checksum();
+            std::string client_sprite_hash = checksum.ToString();
+            sprites_mismatch = client_sprite_hash != server_sprite_hash;
+            _network_sync_info = { tick, srand0, server_srand0, tick, client_sprite_hash, server_sprite_hash };
+            checksum_tick = true;
+        }
+        else
+        {
+            _network_sync_info.tick = tick;
+            _network_sync_info.client_srand0 = srand0;
+            _network_sync_info.server_srand0 = server_srand0;
+        }
+        char buf[512] = {};
+        sprintf(
+            buf, "Tick %d\nsrand:\nours %08X\ntheirs %08X\nsprite hash:\nours '%s'\ntheirs '%s'", tick, srand0, server_srand0,
+            _network_sync_info.client_sprite_hash.c_str(), _network_sync_info.server_sprite_hash.c_str());
+
+        // Compare the server and client PRNGs to make sure they match,
+        // as well as checking if the sprite hashes matched
+        if (srand0 != server_srand0 || sprites_mismatch)
+        {
+            if (!_desynchronised)
+            {
+                auto uiContext = OpenRCT2::GetContext()->GetUiContext();
+                uiContext->WriteLineToConsole("Desync detected!");
+                uiContext->WriteLineToConsole(buf);
+            }
             return false;
         }
+        else if (_desynchronised && srand0 == server_srand0 && checksum_tick && !sprites_mismatch)
+        {
+            auto uiContext = OpenRCT2::GetContext()->GetUiContext();
+            uiContext->WriteLineToConsole("Resync detected...?");
+            uiContext->WriteLineToConsole(buf);
+            _desynchronised = false;
+        }
+        return true;
     }
 
     return true;
@@ -963,13 +996,19 @@ bool Network::IsDesynchronized()
     return gNetwork._desynchronised;
 }
 
+NetworkSyncInfo Network::GetNetworkSyncInfo()
+{
+    return gNetwork._network_sync_info;
+}
+
 void Network::CheckDesynchronizaton()
 {
-    // Check synchronisation
-    if (GetMode() == NETWORK_MODE_CLIENT && !_desynchronised && !CheckSRAND(gCurrentTicks, scenario_rand_state().s0))
-    {
-        _desynchronised = true;
+    if (GetMode() != NETWORK_MODE_CLIENT)
+        return;
 
+    // Check synchronisation
+    if (!CheckSRAND(gCurrentTicks, scenario_rand_state().s0) && !_desynchronised)
+    {
         char str_desync[256];
         format_string(str_desync, 256, STR_MULTIPLAYER_DESYNC, nullptr);
 
@@ -981,6 +1020,7 @@ void Network::CheckDesynchronizaton()
         {
             Close();
         }
+        _desynchronised = true;
     }
 }
 
@@ -2518,6 +2558,7 @@ void Network::Client_Handle_MAP([[maybe_unused]] NetworkConnection& connection, 
             server_tick = gCurrentTicks;
             server_srand0_tick = 0;
             // window_network_status_open("Loaded new map from network");
+            _network_sync_info = { 0, 0, 0, 0, {}, {} };
             _desynchronised = false;
             gFirstTimeSaving = true;
 
@@ -3095,6 +3136,11 @@ int32_t network_get_status()
 bool network_is_desynchronised()
 {
     return gNetwork.IsDesynchronized();
+}
+
+NetworkSyncInfo network_get_sync_info()
+{
+    return gNetwork.GetNetworkSyncInfo();
 }
 
 void network_check_desynchronization()
