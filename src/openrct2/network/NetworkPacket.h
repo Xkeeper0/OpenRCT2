@@ -47,9 +47,7 @@ public:
         }
         else
         {
-            T local;
-            std::memcpy(&local, &GetData()[BytesRead], sizeof(local));
-            value = ByteSwapBE(local);
+            value = ByteSwapBE(*((T*)&GetData()[BytesRead]));
             BytesRead += sizeof(value);
         }
         return *this;
