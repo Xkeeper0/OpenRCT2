@@ -139,7 +139,10 @@ enum TOP_TOOLBAR_DEBUG_DDIDX {
 
 enum TOP_TOOLBAR_NETWORK_DDIDX {
     DDIDX_MULTIPLAYER = 0,
-    DDIDX_DEBUG_DESYNC = 1
+    DDIDX_MULTIPLAYER_RECONNECT = 1,
+    DDIDX_DEBUG_DESYNC = 2,
+
+    TOP_TOOLBAR_NETWORK_COUNT
 };
 
 enum {
@@ -3243,11 +3246,13 @@ static void top_toolbar_init_debug_menu(rct_window* w, rct_widget* widget)
 static void top_toolbar_init_network_menu(rct_window* w, rct_widget* widget)
 {
     gDropdownItemsFormat[DDIDX_MULTIPLAYER] = STR_MULTIPLAYER;
+    gDropdownItemsFormat[DDIDX_MULTIPLAYER_RECONNECT] = STR_MULTIPLAYER_RECONNECT;
     gDropdownItemsFormat[DDIDX_DEBUG_DESYNC] = STR_DEBUG_TIP;
     gDropdownItemsArgs[DDIDX_DEBUG_DESYNC] = STR_TOGGLE_OPTION;
 
     window_dropdown_show_text(
-        w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80, 0, 2);
+        w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80, 0,
+        TOP_TOOLBAR_NETWORK_COUNT);
 
     dropdown_set_checked(DDIDX_DEBUG_DESYNC, window_find_by_class(WC_DEBUG_DESYNC) != nullptr);
 
@@ -3303,6 +3308,9 @@ static void top_toolbar_network_menu_dropdown(int16_t dropdownIndex)
         {
             case DDIDX_MULTIPLAYER:
                 context_open_window(WC_MULTIPLAYER);
+                break;
+            case DDIDX_MULTIPLAYER_RECONNECT:
+                network_reconnect();
                 break;
             case DDIDX_DEBUG_DESYNC:
                 if (window_find_by_class(WC_DEBUG_DESYNC) == nullptr)
