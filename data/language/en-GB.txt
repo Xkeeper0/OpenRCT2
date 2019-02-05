@@ -3736,6 +3736,7 @@ STR_6283    :Chat not available at this time. Are you connected to a server?
 STR_6284    :“{STRINGID}{OUTLINE}{TOPAZ}”{NEWLINE}{STRINGID}
 
 STR_7000    :Reconnect
+STR_7001    :Show sync status
 
 #############
 # Scenarios #

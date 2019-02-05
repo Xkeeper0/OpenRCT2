@@ -25,8 +25,8 @@ enum WINDOW_DEBUG_DESYNC_WIDGET_IDX
     WIDX_BACKGROUND,
 };
 
-#define WINDOW_WIDTH    (400)
-#define WINDOW_HEIGHT   (8 + 15 + 15 + 15 + 15 + 15 + 11 + 8)
+#define WINDOW_WIDTH    (385)
+#define WINDOW_HEIGHT   (8 + 12 * 5 + 8)
 
 static rct_widget window_debug_desync_widgets[] = {
     { WWT_FRAME,    0,  0,  WINDOW_WIDTH - 1,   0,              WINDOW_HEIGHT - 1,  STR_NONE,                               STR_NONE },
@@ -84,7 +84,8 @@ rct_window* window_debug_desync_open()
         return window;
 
     window = window_create(
-        16, 33, WINDOW_WIDTH, WINDOW_HEIGHT, &window_debug_desync_events, WC_DEBUG_DESYNC, WF_STICK_TO_FRONT | WF_TRANSPARENT);
+        context_get_width() - WINDOW_WIDTH - 16, context_get_height() - 16 - 33 - WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT,
+        &window_debug_desync_events, WC_DEBUG_DESYNC, WF_STICK_TO_FRONT | WF_TRANSPARENT);
 
     window->widgets = window_debug_desync_widgets;
     window->enabled_widgets = 0;
@@ -125,13 +126,13 @@ static void window_debug_desync_paint(rct_window* w, rct_drawpixelinfo* dpi)
 
     sprintf(buf, "%d", _network_sync_info.tick);
     int32_t width = gfx_get_string_width(buf);
-    gfx_draw_string(dpi, "Network Sync Info     Tick", COLOUR_WHITE, x, y);
+    gfx_draw_string(dpi, "Current server tick:", COLOUR_WHITE, x, y);
     gfx_draw_string(dpi, buf, COLOUR_WHITE, x + 200 - width, y);
 
     if (!network_is_desynchronised())
-        gfx_draw_string(dpi, "Synchronized", COLOUR_BRIGHT_GREEN | COLOUR_FLAG_OUTLINE, x + 300, y);
+        gfx_draw_string(dpi, "Synchronized", COLOUR_BRIGHT_GREEN | COLOUR_FLAG_OUTLINE, x + 270, y);
     else
-        gfx_draw_string(dpi, "Desynchronized", COLOUR_SATURATED_RED | COLOUR_FLAG_OUTLINE, x + 300, y);
+        gfx_draw_string(dpi, "Desynchronized", COLOUR_SATURATED_RED | COLOUR_FLAG_OUTLINE, x + 270, y);
 
     y += 12;
 
@@ -157,6 +158,10 @@ static void window_debug_desync_paint(rct_window* w, rct_drawpixelinfo* dpi)
     width = gfx_get_string_width(buf);
     gfx_draw_string(dpi, "Last checksum tick:", COLOUR_WHITE, x, y);
     gfx_draw_string(dpi, buf, colour, x + 200 - width, y);
+
+    sprintf(buf, "(%d ticks ago)", _network_sync_info.tick - _network_sync_info.last_checksum_tick);
+    width = gfx_get_string_width(buf);
+    gfx_draw_string(dpi, buf, colour, x + 340 - width, y);
     y += 12;
 
     sprintf(buf, "%s", _network_sync_info.client_sprite_hash.c_str());

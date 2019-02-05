@@ -3245,10 +3245,12 @@ static void top_toolbar_init_debug_menu(rct_window* w, rct_widget* widget)
 
 static void top_toolbar_init_network_menu(rct_window* w, rct_widget* widget)
 {
-    gDropdownItemsFormat[DDIDX_MULTIPLAYER] = STR_MULTIPLAYER;
-    gDropdownItemsFormat[DDIDX_MULTIPLAYER_RECONNECT] = STR_MULTIPLAYER_RECONNECT;
-    gDropdownItemsFormat[DDIDX_DEBUG_DESYNC] = STR_DEBUG_TIP;
-    gDropdownItemsArgs[DDIDX_DEBUG_DESYNC] = STR_TOGGLE_OPTION;
+    gDropdownItemsFormat[DDIDX_MULTIPLAYER] = STR_TOGGLE_OPTION;
+    gDropdownItemsArgs[DDIDX_MULTIPLAYER] = STR_MULTIPLAYER;
+    gDropdownItemsFormat[DDIDX_MULTIPLAYER_RECONNECT] = STR_TOGGLE_OPTION;
+    gDropdownItemsArgs[DDIDX_MULTIPLAYER_RECONNECT] = STR_MULTIPLAYER_RECONNECT;
+    gDropdownItemsFormat[DDIDX_DEBUG_DESYNC] = STR_TOGGLE_OPTION;
+    gDropdownItemsArgs[DDIDX_DEBUG_DESYNC] = STR_DEBUG_DESYNC;
 
     window_dropdown_show_text(
         w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80, 0,
