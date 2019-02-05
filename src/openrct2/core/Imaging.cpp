@@ -135,7 +135,7 @@ namespace Imaging
             {
                 // 32-bit PNG (with alpha)
                 // FIXME: Assert triggers on Ubuntu 16.04 for unknown reasons
-                //Guard::Assert(rowBytes == pngWidth * 4, GUARD_LINE);
+                // Guard::Assert(rowBytes == pngWidth * 4, GUARD_LINE);
                 for (png_uint_32 i = 0; i < pngHeight; i++)
                 {
                     std::copy_n(rowPointers[i], rowBytes, dst);

@@ -1301,7 +1301,10 @@ static void window_park_price_paint(rct_window* w, rct_drawpixelinfo* dpi)
     x = w->x + window_park_price_widgets[WIDX_PAGE_BACKGROUND].left + 4;
     y = w->y + window_park_price_widgets[WIDX_PAGE_BACKGROUND].top + 30;
 
-    gfx_draw_string_left(dpi, (_suggestedGuestMaximum == 1 ? STR_BOTTOM_TOOLBAR_NUM_GUESTS_STABLE_SINGULAR : STR_BOTTOM_TOOLBAR_NUM_GUESTS_STABLE), &_suggestedGuestMaximum, COLOUR_WHITE, x, y);
+    gfx_draw_string_left(
+        dpi,
+        (_suggestedGuestMaximum == 1 ? STR_BOTTOM_TOOLBAR_NUM_GUESTS_STABLE_SINGULAR : STR_BOTTOM_TOOLBAR_NUM_GUESTS_STABLE),
+        &_suggestedGuestMaximum, COLOUR_WHITE, x, y);
     y += LIST_ROW_HEIGHT;
 
     if (!(gParkFlags & PARK_FLAGS_NO_MONEY))

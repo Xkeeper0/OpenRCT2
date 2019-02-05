@@ -473,33 +473,28 @@ static void window_game_bottom_toolbar_draw_left_panel(rct_drawpixelinfo* dpi, r
 
         window_game_bottom_toolbar_draw_park_rating(dpi, w, w->colours[3], x, y, std::max(10, ((gParkRating / 4) * 263) / 256));
 
-        uint8_t colour  = COLOUR_SATURATED_GREEN;
+        uint8_t colour = COLOUR_SATURATED_GREEN;
         if (gParkRating < 600)
         {
-            colour      = COLOUR_SATURATED_RED;
+            colour = COLOUR_SATURATED_RED;
         }
         else if (gParkRating < 700)
         {
-            colour      = COLOUR_DARK_ORANGE;
+            colour = COLOUR_DARK_ORANGE;
         }
         else if (gParkRating < 900)
         {
-            colour      = COLOUR_DARK_YELLOW;
+            colour = COLOUR_DARK_YELLOW;
         }
         else if (gParkRating < 999)
         {
-            colour      = COLOUR_WHITE;
+            colour = COLOUR_WHITE;
         }
 
         x = w->x + (widget.left + widget.right) / 2;
         y = w->y + (widget.top + widget.bottom) / 2 - 5;
 
-        gfx_draw_string_centred(
-            dpi,
-            STR_COMMA16,
-            x, y,
-            colour | COLOUR_FLAG_OUTLINE,
-            &gParkRating);
+        gfx_draw_string_centred(dpi, STR_COMMA16, x, y, colour | COLOUR_FLAG_OUTLINE, &gParkRating);
     }
 }
 

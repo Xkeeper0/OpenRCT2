@@ -18,6 +18,7 @@
 #include "../platform/platform.h"
 #include "../ui/UiContext.h"
 #include "../util/Util.h"
+
 #include <algorithm>
 
 bool gChatOpen = false;
