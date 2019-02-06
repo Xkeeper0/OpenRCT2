@@ -592,17 +592,24 @@ bool Network::BeginServer(uint16_t port, const char* address)
     BeginChatLog();
     BeginServerLog();
 
-    NetworkPlayer* player = AddPlayer(gConfigNetwork.player_name, "");
-    player->Flags |= NETWORK_PLAYER_FLAG_ISSERVER;
-    player->Group = 0;
-    player_id = player->Id;
-
-    if (network_get_mode() == NETWORK_MODE_SERVER)
+    if (network_get_mode() == NETWORK_MODE_SERVER && !gOpenRCT2Headless)
     {
+        NetworkPlayer* player = AddPlayer(gConfigNetwork.player_name, "");
+        player->Flags |= NETWORK_PLAYER_FLAG_ISSERVER;
+        player->Group = 0;
+        player_id = player->Id;
+
         // Add SERVER to users.json and save.
         NetworkUser* networkUser = _userManager.GetOrAddUser(player->KeyHash);
         networkUser->GroupId = player->Group;
         networkUser->Name = player->Name;
+        _userManager.Save();
+    }
+    else
+    {
+        // A headless server is not a player.
+        // ID 0 is reserved for us in AddPlayer() in this mode.
+        player_id = 0;
         _userManager.Save();
     }
 
@@ -2033,7 +2040,8 @@ NetworkPlayer* Network::AddPlayer(const utf8* name, const std::string& keyhash)
     if (GetMode() == NETWORK_MODE_SERVER)
     {
         // Find first unused player id
-        for (int32_t id = 0; id < 255; id++)
+        // Headless servers "reserve" slot 0 for themselves
+        for (int32_t id = (!gOpenRCT2Headless ? 0 : 1); id < 255; id++)
         {
             if (std::find_if(
                     player_list.begin(), player_list.end(),
