@@ -134,7 +134,7 @@ public:
     void SendPacketToClients(NetworkPacket& packet, bool front = false, bool gameCmd = false);
     bool CheckSRAND(uint32_t tick, uint32_t srand0);
     NetworkSyncInfo GetNetworkSyncInfo();
-    bool IsDesynchronized();
+    bool IsDesynchronised();
     void CheckDesynchronizaton();
     void KickPlayer(int32_t playerId);
     void SetPassword(const char* password);
@@ -1018,7 +1018,7 @@ bool Network::CheckSRAND(uint32_t tick, uint32_t srand0)
     return true;
 }
 
-bool Network::IsDesynchronized()
+bool Network::IsDesynchronised()
 {
     return gNetwork._desynchronised;
 }
@@ -3191,7 +3191,7 @@ int32_t network_get_status()
 
 bool network_is_desynchronised()
 {
-    return gNetwork.IsDesynchronized();
+    return gNetwork.IsDesynchronised();
 }
 
 NetworkSyncInfo network_get_sync_info()
@@ -3994,6 +3994,10 @@ void network_flush()
 void network_send_tick()
 {
 }
+bool network_is_desynchronised()
+{
+    return false;
+}
 void network_check_desynchronization()
 {
 }
@@ -4150,6 +4154,9 @@ void network_send_password(const char* password)
 {
 }
 void network_close()
+{
+}
+void network_reconnect()
 {
 }
 void network_set_env(const std::shared_ptr<OpenRCT2::IPlatformEnvironment>&)
